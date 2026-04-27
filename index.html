@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korean C-test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --text: #1A1A18;
+    --muted: #6B6B65;
+    --border: #E0DDD6;
+    --accent: #185FA5;
+    --accent-light: #E6F1FB;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+  .admin-btn {
+    font-size: 12px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    transition: all 0.15s;
+  }
+  .admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ---------- SCREEN: info ---------- */
+  #screen-info {
+    max-width: 480px;
+    margin: 3rem auto 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+  .card-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+    line-height: 1.7;
+  }
+  .field { margin-bottom: 1.25rem; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 15px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.5rem;
+  }
+  .btn-primary:hover { background: #0C447C; }
+
+  /* ---------- SCREEN: quiz ---------- */
+  #screen-quiz { display: none; }
+
+  .quiz-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .student-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px 6px 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .student-chip .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .progress-label { font-size: 12px; color: var(--muted); }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .quiz-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+  .quiz-example {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 1.5rem;
+    line-height: 2;
+  }
+  .quiz-example strong { color: var(--text); font-weight: 500; }
+
+  .passage {
+    font-size: 18px;
+    line-height: 2.8;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+  }
+
+  .blank-group {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 2px;
+    position: relative;
+    cursor: text;
+  }
+  .blank-cells {
+    display: inline-flex;
+    gap: 3px;
+    pointer-events: none;
+  }
+  .syllable-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 34px;
+    border-bottom: 2px solid #BBBBB5;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--accent);
+    transition: border-color 0.1s;
+  }
+  .blank-group.focused .syllable-cell { border-color: var(--accent); }
+  .blank-real-input {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 17px;
+    cursor: text;
+    z-index: 2;
+  }
+  .blank-real-input:disabled { cursor: default; }
+
+  .btn-row { margin-top: 1rem; }
+  .btn-submit {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #0C447C; }
+
+  /* ---------- SCREEN: thank you ---------- */
+  #screen-thankyou {
+    display: none;
+    max-width: 480px;
+    margin: 5rem auto 0;
+    text-align: center;
+  }
+  .thankyou-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3rem 2rem;
+  }
+  .thankyou-icon {
+    font-size: 36px;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .thankyou-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  .thankyou-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .sync-notice {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #3B6D11; }
+  .sync-dot.pending { background: #EF9F27; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ---------- SCREEN: admin ---------- */
+  #screen-admin { display: none; }
+  .admin-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.25rem;
+  }
+  .admin-card h3 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 17px;
+    margin-bottom: 1rem;
+  }
+  .setting-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+  .setting-row input {
+    flex: 1;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .setting-row input:focus { border-color: var(--accent); }
+  .setting-row button {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 9px 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .admin-help {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    word-break: break-all;
+  }
+  .admin-help code {
+    font-family: monospace;
+    font-size: 11px;
+  }
+  .back-btn {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1.5rem;
+  }
+  .back-btn:hover { color: var(--accent); }
+  .log-entry {
+    display: flex;
+    gap: 1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-time { color: var(--muted); font-size: 12px; white-space: nowrap; min-width: 90px; }
+  .log-name { font-weight: 500; min-width: 80px; }
+  .log-score { color: var(--accent); font-weight: 500; }
+  .log-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 1.5rem 0; }
+
+  @media (max-width: 540px) {
+    main { padding: 1.5rem 1rem 3rem; }
+    .quiz-card { padding: 1.5rem 1.25rem; }
+    .passage { font-size: 16px; }
+    header { padding: 1rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Korean <span>C-test</span> for KLEAR Textbooks</div>
+  <button class="admin-btn" onclick="toggleAdmin()">Admin ⚙</button>
+</header>
+
+<main>
+
+  <!-- SCREEN 1: student info -->
+  <div id="screen-info">
+    <div class="card">
+      <div class="card-title">Hello 안녕하세요 👋</div>
+      <div class="card-sub">
+        This Korean C-test is designed to help learners identify which level of KLEAR textbooks best suits them.<br><br>
+        Please enter your full name and class before starting the quiz.
+      </div>
+      <div class="field">
+        <label>Full Name (First and Last Name)</label>
+        <input type="text" id="input-name" placeholder="Example: John Smith" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label>Class</label>
+        <input type="text" id="input-section" placeholder="Example: Korean 101" />
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">START →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: quiz -->
+  <div id="screen-quiz">
+    <div class="quiz-meta">
+      <div class="student-chip">
+        <div class="dot"></div>
+        <span id="chip-name">—</span>
+      </div>
+      <div class="progress-label" id="progress-label"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-label">
+        Read the passage below and fill in the blanks. One syllable per blank.<br>
+        <span style="font-size:11px; color:var(--muted);">(밑줄 하나에는 한 글자만 쓸 수 있습니다.)</span>
+      </div>
+      <div class="quiz-example">
+        <strong>Example:</strong>&nbsp; 안녕<span style="color:#BBBBB5; letter-spacing:1px;">_ _ _</span>. 제 이<span style="color:#BBBBB5; letter-spacing:1px;">_ _</span> 김민수입니다.<br>
+        <strong>Answer:</strong>&nbsp; 안녕<u>하세요</u>. 제 이<u>름은</u> 김민수입니다.
+      </div>
+      <div class="passage" id="passage"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-submit" onclick="submitQuiz()">Submit</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: thank you -->
+  <div id="screen-thankyou">
+    <div class="thankyou-card">
+      <div class="thankyou-icon">✓</div>
+      <div class="thankyou-title">Thank you! 감사합니다.</div>
+      <div class="thankyou-sub">Your response has been recorded.</div>
+      <div class="sync-notice">
+        <div class="sync-dot pending" id="sync-dot"></div>
+        <span id="sync-text">Saving...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: admin -->
+  <div id="screen-admin">
+    <button class="back-btn" onclick="toggleAdmin()">← Back</button>
+    <div class="admin-card">
+      <h3>Google Sheets Webhook</h3>
+      <div class="setting-row">
+        <input type="text" id="input-webhook" placeholder="Paste Apps Script URL here" />
+        <button onclick="saveWebhook()">Save</button>
+      </div>
+      <div class="admin-help">Current: <code id="webhook-display"></code></div>
+    </div>
+    <div class="admin-card">
+      <h3>Submission Log (local)</h3>
+      <div id="log-list"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ============================================================
+   SEGMENTS
+   answers: 배열 — 여러 정답 허용
+   ============================================================ */
+const SEGMENTS = [
+  { type: 'text', text: '서울은 대한민국의 수도로 인구는 약 1,000만 명이다. 서울은 대한민국의 유일한 특별시이' },
+  { type: 'blank', answers: ['자', '고', '며'], syllables: 1 },
+  { type: 'text', text: ' 경제의 중심지라고 불' },
+  { type: 'blank', answers: ['린다'], syllables: 2 },
+  { type: 'text', text: '. 하지만 모두가 알다' },
+  { type: 'blank', answers: ['시피'], syllables: 2 },
+  { type: 'text', text: ' 서울의 집값은 아주 비싼 편에 해' },
+  { type: 'blank', answers: ['당한다', '당된다'], syllables: 3 },
+  { type: 'text', text: '. 서울의 평균 아파트 가격은 무려 12억 원에 달' },
+  { type: 'blank', answers: ['하는데', '하므로'], syllables: 3 },
+  { type: 'text', text: ' 이는 뉴욕 같은 세계의 주요 도시 못' },
+  { type: 'blank', answers: ['지않게'], syllables: 3 },
+  { type: 'text', text: ' 서울의 집값도 비' },
+  { type: 'blank', answers: ['싼'], syllables: 1 },
+  { type: 'text', text: ' 셈이다. 주거비 부담의 영' },
+  { type: 'blank', answers: ['향으로'], syllables: 3 },
+  { type: 'text', text: ' 서울을 떠나는 인구도 늘고 있는데 이러다' },
+  { type: 'blank', answers: ['가는', '보니'], syllables: 2 },
+  { type: 'text', text: ' 다른 도시로 이주하는 인구가 더 늘어난다고 한다. 그래서 비싼 월세를 내며 서울에 사' },
+  { type: 'blank', answers: ['느니'], syllables: 2 },
+  { type: 'text', text: ' 차라리 기왕' },
+  { type: 'blank', answers: ['이면'], syllables: 2 },
+  { type: 'text', text: ' 집값이 저렴한 곳으로 이사를 가는 사람들이 많아졌다. 특히 대출 규제가 강화되는 바' },
+  { type: 'blank', answers: ['람에'], syllables: 2 },
+  { type: 'text', text: ' 과거에 당연한 것이라고 여겨' },
+  { type: 'blank', answers: ['졌던', '지던'], syllables: 2 },
+  { type: 'text', text: ' 내 집 마련의 꿈이 더이상은 당연한 것이 아니게 되었다. 특히 최근에는 전세 사기를 당' },
+  { type: 'blank', answers: ['하는'], syllables: 2 },
+  { type: 'text', text: ' 사람이 많아져서 이를 바탕' },
+  { type: 'blank', answers: ['으로'], syllables: 2 },
+  { type: 'text', text: ' 정부는 규제를 강화하기로 했다.' },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let studentName = '';
+let studentSection = '';
+let submitted = false;
+let blankElements = [];
+let isComposing = false;
+let webhookUrl = 'https://script.google.com/macros/s/AKfycbwPTKkLAS-6ubB1m_1ZcW53UZMK5Kp1rDI06J_Kvup6NNYVmM5mo6CBX88RDjuC6QXS/exec';
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('quiz_webhook');
+  if (saved) webhookUrl = saved;
+  document.getElementById('input-webhook').value = webhookUrl;
+  document.getElementById('webhook-display').textContent = webhookUrl || '(not set)';
+});
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+function showScreen(name) {
+  ['screen-info','screen-quiz','screen-thankyou','screen-admin'].forEach(id => {
+    document.getElementById(id).style.display = id === name ? 'block' : 'none';
+  });
+}
+
+function startQuiz() {
+  const name = document.getElementById('input-name').value.trim();
+  const section = document.getElementById('input-section').value.trim();
+  if (!name) { alert('Please enter your full name.'); return; }
+  studentName = name;
+  studentSection = section;
+  document.getElementById('chip-name').textContent = name;
+  showScreen('screen-quiz');
+  buildPassage();
+  updateProgress();
+}
+
+function toggleAdmin() {
+  const admin = document.getElementById('screen-admin');
+  if (admin.style.display === 'block') {
+    if (submitted) showScreen('screen-thankyou');
+    else if (studentName) showScreen('screen-quiz');
+    else showScreen('screen-info');
+  } else {
+    const pw = prompt('Enter admin password:');
+    if (pw !== '0122') {
+      if (pw !== null) alert('Incorrect password.');
+      return;
+    }
+    showScreen('screen-admin');
+    renderLog();
+    document.getElementById('input-webhook').value = webhookUrl;
+    document.getElementById('webhook-display').textContent = webhookUrl || '(not set)';
+  }
+}
+
+/* ============================================================
+   BUILD PASSAGE
+   ============================================================ */
+function buildPassage() {
+  const p = document.getElementById('passage');
+  p.innerHTML = '';
+  blankElements = [];
+
+  let blankIdx = 0;
+  SEGMENTS.forEach(seg => {
+    if (seg.type === 'text') {
+      p.appendChild(document.createTextNode(seg.text));
+    } else {
+      const idx = blankIdx++;
+      const syllables = seg.syllables;
+      const CELL_W = 28, GAP = 3;
+      const totalW = syllables * CELL_W + (syllables - 1) * GAP;
+
+      const group = document.createElement('span');
+      group.className = 'blank-group';
+      group.dataset.idx = idx;
+      group.dataset.answers = JSON.stringify(seg.answers);
+      group.dataset.syllables = syllables;
+      group.style.width = totalW + 'px';
+
+      const cells = document.createElement('span');
+      cells.className = 'blank-cells';
+      for (let i = 0; i < syllables; i++) {
+        const cell = document.createElement('span');
+        cell.className = 'syllable-cell';
+        cells.appendChild(cell);
+      }
+      group.appendChild(cells);
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'blank-real-input';
+      inp.autocomplete = 'off';
+      inp.autocorrect = 'off';
+      inp.autocapitalize = 'none';
+      inp.spellcheck = false;
+
+      inp.addEventListener('focus', () => group.classList.add('focused'));
+      inp.addEventListener('blur', () => group.classList.remove('focused'));
+      inp.addEventListener('compositionstart', () => { isComposing = true; });
+      inp.addEventListener('compositionend', () => {
+        isComposing = false;
+        onBlankInput(idx);
+      });
+      inp.addEventListener('input', () => onBlankInput(idx));
+      inp.addEventListener('keydown', e => onBlankKeyDown(e, idx));
+      group.addEventListener('click', () => inp.focus());
+
+      group.appendChild(inp);
+      p.appendChild(group);
+      blankElements.push(group);
+    }
+  });
+  updateProgress();
+}
+
+/* ============================================================
+   INPUT HANDLING
+   ============================================================ */
+function onBlankInput(idx) {
+  const group = blankElements[idx];
+  const inp = group.querySelector('.blank-real-input');
+  const syllables = parseInt(group.dataset.syllables);
+  const cells = group.querySelectorAll('.syllable-cell');
+
+  let chars = [...inp.value];
+
+  if (chars.length > syllables) {
+    chars = chars.slice(0, syllables);
+    inp.value = chars.join('');
+  }
+
+  cells.forEach((cell, i) => { cell.textContent = chars[i] || ''; });
+  updateProgress();
+
+  if (!isComposing && chars.length >= syllables) {
+    const nextGroup = blankElements[idx + 1];
+    if (nextGroup) setTimeout(() => nextGroup.querySelector('.blank-real-input').focus(), 30);
+  }
+}
+
+function onBlankKeyDown(e, idx) {
+  const group = blankElements[idx];
+  const inp = group.querySelector('.blank-real-input');
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const next = e.shiftKey ? idx - 1 : idx + 1;
+    if (blankElements[next]) blankElements[next].querySelector('.blank-real-input').focus();
+
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    const nextGroup = blankElements[idx + 1];
+    if (nextGroup) nextGroup.querySelector('.blank-real-input').focus();
+    else submitQuiz();
+
+  } else if (e.key === 'ArrowRight') {
+    if (inp.selectionStart === inp.value.length) {
+      e.preventDefault();
+      const nextGroup = blankElements[idx + 1];
+      if (nextGroup) nextGroup.querySelector('.blank-real-input').focus();
+    }
+
+  } else if (e.key === 'ArrowLeft') {
+    if (inp.selectionStart === 0) {
+      e.preventDefault();
+      const prevGroup = blankElements[idx - 1];
+      if (prevGroup) {
+        const prevInp = prevGroup.querySelector('.blank-real-input');
+        prevInp.focus();
+        const len = prevInp.value.length;
+        prevInp.setSelectionRange(len, len);
+      }
+    }
+
+  } else if (e.key === 'Backspace') {
+    if (inp.value === '') {
+      e.preventDefault();
+      const prevGroup = blankElements[idx - 1];
+      if (prevGroup) {
+        const prevInp = prevGroup.querySelector('.blank-real-input');
+        prevInp.focus();
+        const chars = [...prevInp.value];
+        chars.pop();
+        prevInp.value = chars.join('');
+        onBlankInput(idx - 1);
+      }
+    }
+  }
+}
+
+function updateProgress() {
+  const total = blankElements.length;
+  let filled = 0;
+  blankElements.forEach(group => {
+    const inp = group.querySelector('.blank-real-input');
+    const syllables = parseInt(group.dataset.syllables);
+    if (inp && [...inp.value].length >= syllables) filled++;
+  });
+  document.getElementById('progress-label').textContent = `${filled} / ${total} filled`;
+}
+
+/* ============================================================
+   SUBMIT
+   ============================================================ */
+function submitQuiz() {
+  if (submitted) return;
+  submitted = true;
+
+  let correct = 0;
+  const logEntries = [];
+
+  blankElements.forEach((group, idx) => {
+    const answers = JSON.parse(group.dataset.answers);
+    const inp = group.querySelector('.blank-real-input');
+    const userAnswer = inp ? inp.value.trim() : '';
+    const isCorrect = answers.includes(userAnswer);
+    if (isCorrect) correct++;
+    if (inp) inp.disabled = true;
+
+    logEntries.push({ qNum: idx + 1, userAnswer, correctAnswers: answers, isCorrect });
+  });
+
+  const total = blankElements.length;
+  const pct = Math.round((correct / total) * 100);
+
+  showScreen('screen-thankyou');
+  saveLocal({ name: studentName, section: studentSection, score: correct, total, pct, answers: logEntries });
+  sendToSheets({ name: studentName, section: studentSection, score: correct, total, pct, answers: logEntries });
+}
+
+/* ============================================================
+   DATA
+   ============================================================ */
+function saveLocal(data) {
+  const log = JSON.parse(localStorage.getItem('quiz_log') || '[]');
+  log.unshift({ ...data, timestamp: new Date().toISOString() });
+  localStorage.setItem('quiz_log', JSON.stringify(log.slice(0, 100)));
+}
+
+async function sendToSheets(data) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+
+  if (!webhookUrl) {
+    dot.classList.remove('pending');
+    dot.style.background = '#BBBBB5';
+    txt.textContent = 'Not saved (no webhook configured)';
+    return;
+  }
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
+    });
+    dot.classList.remove('pending');
+    dot.style.background = '#3B6D11';
+    txt.textContent = 'Response saved successfully.';
+  } catch (err) {
+    dot.classList.remove('pending');
+    dot.style.background = '#A32D2D';
+    txt.textContent = 'Save failed. Please check your network.';
+  }
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+function saveWebhook() {
+  const val = document.getElementById('input-webhook').value.trim();
+  webhookUrl = val;
+  localStorage.setItem('quiz_webhook', val);
+  document.getElementById('webhook-display').textContent = val || '(not set)';
+  alert(val ? 'Webhook URL saved!' : 'Webhook removed.');
+}
+
+function renderLog() {
+  const log = JSON.parse(localStorage.getItem('quiz_log') || '[]');
+  const container = document.getElementById('log-list');
+  if (!log.length) {
+    container.innerHTML = '<div class="log-empty">No submissions yet.</div>';
+    return;
+  }
+  container.innerHTML = log.map(e => {
+    const d = new Date(e.timestamp);
+    const time = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return `<div class="log-entry">
+      <span class="log-time">${time}</span>
+      <span class="log-name">${e.name}</span>
+      <span style="font-size:12px;color:var(--muted);">${e.section || '-'}</span>
+      <span class="log-score">${e.score}/${e.total}</span>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
