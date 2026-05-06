@@ -588,10 +588,10 @@ function buildPassage() {
       inp.addEventListener('focus', () => group.classList.add('focused'));
       inp.addEventListener('blur', () => group.classList.remove('focused'));
       inp.addEventListener('compositionstart', () => { isComposing = true; });
-      inp.addEventListener('compositionend', () => {
-        isComposing = false;
-        onBlankInput(idx);
-      });
+     inp.addEventListener('compositionend', () => {
+  isComposing = false;
+  setTimeout(() => onBlankInput(idx), 50);
+});
       inp.addEventListener('input', () => onBlankInput(idx));
       inp.addEventListener('keydown', e => onBlankKeyDown(e, idx));
       group.addEventListener('click', () => inp.focus());
@@ -624,8 +624,15 @@ function onBlankInput(idx) {
   updateProgress();
 
   if (!isComposing && chars.length >= syllables) {
-    const nextGroup = blankElements[idx + 1];
-    if (nextGroup) setTimeout(() => nextGroup.querySelector('.blank-real-input').focus(), 30);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const delay = isMobile ? 300 : 30;
+    setTimeout(() => {
+      const currentChars = [...inp.value];
+      if (currentChars.length >= syllables) {
+        const nextGroup = blankElements[idx + 1];
+        if (nextGroup) nextGroup.querySelector('.blank-real-input').focus();
+      }
+    }, delay);
   }
 }
 
